@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { postInternship, getProfile } from "../../services/companyService";
+import {
+  postInternship,
+  getProfile,
+  updateProfile,
+} from "../../services/companyService";
 import toast from "react-hot-toast";
 
 const PostInternship = () => {
@@ -31,6 +35,7 @@ const PostInternship = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      await updateProfile({ companyName });
       await postInternship({
         ...form,
         requiredSkills: form.requiredSkills
@@ -59,9 +64,7 @@ const PostInternship = () => {
 
   return (
     <div className="bg-surface-800 rounded-xl shadow-sm border border-surface-600 p-6">
-      <h2 className="text-xl font-bold mb-6 text-white">
-        Post New Internship
-      </h2>
+      <h2 className="text-xl font-bold mb-6 text-white">Post New Internship</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -70,9 +73,9 @@ const PostInternship = () => {
             </label>
             <input
               type="text"
-              readOnly
-              className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-gray-400 outline-none cursor-not-allowed"
+              className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
               value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
           </div>
           <div>
