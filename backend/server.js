@@ -19,16 +19,37 @@ connectDB();
 
 const app = express();
 
+const allowedOrigins = [
+  ...(process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(",").map((url) => url.trim())
+    : []),
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
+const corsOptions = {
+  origin(origin, callback) {
+    // Allow non-browser clients (no Origin header) and configured browser origins.
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow Vercel preview/production frontend domains without hardcoding each URL.
+    if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 // Security middleware
 app.use(helmet());
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL
-      ? process.env.CLIENT_URL.split(",").map((url) => url.trim())
-      : "http://localhost:5173",
-    credentials: true,
-  }),
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
