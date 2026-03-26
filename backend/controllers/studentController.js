@@ -58,7 +58,7 @@ exports.uploadResume = async (req, res, next) => {
     const profile = await StudentProfile.findOneAndUpdate(
       { userId: req.user._id },
       { resumeURL: req.file.path },
-      { new: true },
+      { new: true, upsert: true, setDefaultsOnInsert: true },
     );
 
     res.json({ resumeURL: profile.resumeURL });
