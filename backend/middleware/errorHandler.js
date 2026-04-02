@@ -26,6 +26,24 @@ const errorHandler = (err, req, res, _next) => {
     return res.status(400).json({ message: "File size exceeds limit" });
   }
 
+  // Multer or Cloudinary upload errors
+  if (err.name === "MulterError") {
+    return res
+      .status(400)
+      .json({ message: err.message || "File upload failed" });
+  }
+
+  if (
+    /cloudinary|upload|invalid image file|resource_type|api_key|cloud_name/i.test(
+      err.message || "",
+    )
+  ) {
+    return res.status(500).json({
+      message:
+        "File upload service is not configured correctly. Please check server Cloudinary settings.",
+    });
+  }
+
   res.status(err.statusCode || 500).json({
     message: err.message || "Internal Server Error",
   });

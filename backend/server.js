@@ -25,17 +25,35 @@ const allowedOrigins = [
     : []),
   "http://localhost:5173",
   "http://localhost:3000",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:3000",
 ];
 
 const corsOptions = {
   origin(origin, callback) {
-    // Allow non-browser clients (no Origin header) and configured browser origins.
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow non-browser clients (no Origin header).
+    if (!origin) {
       return callback(null, true);
     }
 
-    // Allow Vercel preview/production frontend domains without hardcoding each URL.
-    if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+    // Normalize origin for robust localhost checks.
+    const normalizedOrigin = origin.replace(/\/$/, "");
+
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    if (
+      /^http:\/\/(localhost|127\.0\.0\.1):(3000|5173)$/i.test(normalizedOrigin)
+    ) {
+      return callback(null, true);
+    }
+
+    // Allow Vercel/Render frontend domains without hardcoding each URL.
+    if (
+      /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(normalizedOrigin) ||
+      /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(normalizedOrigin)
+    ) {
       return callback(null, true);
     }
 
