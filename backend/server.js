@@ -59,9 +59,14 @@ const limiter = rateLimit({
 });
 app.use("/api/", limiter);
 
+const path = require("path");
+
 // Body parsers
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // API routes
 app.use("/api/auth", authRoutes);

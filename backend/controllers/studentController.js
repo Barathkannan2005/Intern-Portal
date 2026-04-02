@@ -57,7 +57,7 @@ exports.uploadResume = async (req, res, next) => {
 
     const profile = await StudentProfile.findOneAndUpdate(
       { userId: req.user._id },
-      { resumeURL: req.file.path },
+      { resumeURL: `/uploads/resumes/${req.file.filename}` },
       { new: true },
     );
 
@@ -202,7 +202,7 @@ exports.uploadReport = async (req, res, next) => {
     const report = await Report.create({
       studentId: req.user._id,
       internshipId,
-      reportURL: req.file.path,
+      reportURL: `/uploads/reports/${req.file.filename}`,
       summary,
     });
 
@@ -226,7 +226,7 @@ exports.uploadCertificate = async (req, res, next) => {
 
     const report = await Report.findOneAndUpdate(
       { _id: reportId, studentId: req.user._id },
-      { certificateURL: req.file.path },
+      { certificateURL: `/uploads/certificates/${req.file.filename}` },
       { new: true },
     );
 
